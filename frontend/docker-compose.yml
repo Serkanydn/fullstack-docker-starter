@@ -1,0 +1,15 @@
+services:
+  frontend:
+    container_name: dreamchat-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dreamchat:frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    networks:
+      - dreamchat-network
+networks:
+  dreamchat-network:
+    external: true

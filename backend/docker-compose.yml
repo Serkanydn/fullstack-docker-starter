@@ -1,0 +1,53 @@
+services:
+  backend:
+    container_name: dreamchat-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dreamchat:backend
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env.production
+    restart: unless-stopped
+    networks:
+      - dreamchat-network
+
+  mongo:
+    container_name: dreamchat-mongo
+    image: mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - dreamchat-network
+
+  mongo-backup:
+    container_name: dreamchat-mongo-backup
+    image: mongo
+    depends_on:
+      - mongo
+    volumes:
+      - mongo_backup:/backup
+    entrypoint: >
+      bash -c "
+        while true; do
+          mongodump --uri=mongodb://mongo:27017/dreamchat --out=/backup/$(date +%Y%m%d_%H%M%S);
+          find /backup -maxdepth 1 -type d -mtime +7 -exec rm -rf {} \;
+          sleep 86400;
+        done
+      "
+      
+    networks:
+      - dreamchat-network
+
+volumes:
+  mongo-data:
+  mongo_backup:
+
+networks:
+  dreamchat-network:
+    external: true
+
+
+
