@@ -7,11 +7,17 @@ function App() {
   const [count, setCount] = useState(0);
 
   const [status, setStatus] = useState("...");
+  const [whoami, setWho] = useState("...");
 
   useEffect(() => {
     fetch("/api/health")
       .then((res) => res.text())
       .then((data) => setStatus(data))
+      .catch((err) => setStatus("HATA: " + err.message));
+
+    fetch("/api/whoami")
+      .then((res) => res.text())
+      .then((data) => setWho(data))
       .catch((err) => setStatus("HATA: " + err.message));
   }, []);
 
@@ -19,10 +25,15 @@ function App() {
     <>
       <div>
         <p>API Sağlık Durumu: {status}</p>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        <br />
+        <br />
+        <br />
+        <br />
+        <p>Who am I: {whoami}</p>
+        <br />
+        <br />
+        <br />
+        <br />
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>

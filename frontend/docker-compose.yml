@@ -10,6 +10,11 @@ services:
     restart: unless-stopped
     networks:
       - dreamchat-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
 networks:
   dreamchat-network:
     external: true

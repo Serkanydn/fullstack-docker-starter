@@ -135,3 +135,45 @@ Sadece belirli bir veritabanını geri yüklemek için:
 ```bash
 mongorestore --uri="mongodb://localhost:27017" --db=dreamchat /backup/20250614_000000/dreamchat
 ```
+
+# Load Balance Kontrolü
+
+```bash
+docker logs dreamchat-proxy
+
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+```
+---
+# Rate Limit Testi
+```bash
+docker run --rm jordi/ab -n 100 -c 50 http://host.docker.internal/api/health
+```
+
+# Nginx Erişim Log Kontrolü
+```bash
+docker exec -it dreamchat-proxy tail -n 50 /var/log/nginx/access.log
+
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [200]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.4:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [429]
+172.23.0.1 - host.docker.internal "/api/health" -> 172.23.0.3:5000 [429]
+```

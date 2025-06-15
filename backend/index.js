@@ -1,11 +1,41 @@
 import express from "express";
 import { MongoClient } from "mongodb";
+import rateLimit from "express-rate-limit";
+import cors from "cors";
+
+const allowedOrigins = [
+  "https://dreamchat.com",
+  "https://admin.dreamchat.com",
+  "*",
+];
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 const uri = process.env.MONGO_URI || "mongodb://mongo:27017";
 const client = new MongoClient(uri);
+
+const _cors = cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS hatası: Erişime izin verilmeyen origin"));
+    }
+  },
+  credentials: true,
+});
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Çok fazla istek attınız, lütfen daha sonra tekrar deneyin.",
+});
+
+app.use(_cors);
+app.use(limiter);
 
 app.get("/", async (req, res) => {
   try {
@@ -25,6 +55,10 @@ app.get("/", async (req, res) => {
 
 app.get("/health", (req, res) => res.send("OK"));
 app.get("/users", (req, res) => res.json([{ name: "Alice" }, { name: "Bob" }]));
+
+app.get("/whoami", (req, res) => {
+  res.json({ instance: process.env.INSTANCE_NAME || "default" });
+});
 
 app.listen(port, () => {
   console.log(`API http://localhost:${port} adresinde`);
