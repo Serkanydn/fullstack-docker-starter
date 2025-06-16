@@ -1,0 +1,20 @@
+services:
+  admin:
+    container_name: dreamchat-admin
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dreamchat:admin
+    ports:
+      - "3001:80"
+    restart: unless-stopped
+    networks:
+      - dreamchat-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
+networks:
+  dreamchat-network:
+    external: true

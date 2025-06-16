@@ -8,6 +8,9 @@ docker-compose -f ./backend/docker-compose.yml down
 echo "Starting frontend..."
 docker-compose -f ./frontend/docker-compose.yml down
 
+echo "Starting admin..."
+docker-compose -f ./admin/docker-compose.yml down
+
 echo "Starting reverse proxy..."
 docker-compose -f ./nginx/docker-compose.yml down
 

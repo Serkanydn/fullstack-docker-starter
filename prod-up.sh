@@ -16,6 +16,9 @@ docker-compose -f ./backend/docker-compose.yml up --build -d
 echo "Starting frontend..."
 docker-compose -f ./frontend/docker-compose.yml up --build -d
 
+echo "Starting admin..."
+docker-compose -f ./admin/docker-compose.yml up --build -d
+
 echo "Starting reverse proxy..."
 docker-compose -f ./nginx/docker-compose.yml up --build -d
 

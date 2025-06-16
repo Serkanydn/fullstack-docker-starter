@@ -4,9 +4,12 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 
 const allowedOrigins = [
-  "https://dreamchat.com",
-  "https://admin.dreamchat.com",
-  "*",
+  "http://chat.dreamchat.local",
+  "http://admin.dreamchat.local",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
 ];
 
 const app = express();
@@ -53,7 +56,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/health", (req, res) => res.send("OK"));
 app.get("/users", (req, res) => res.json([{ name: "Alice" }, { name: "Bob" }]));
 
 app.get("/whoami", (req, res) => {

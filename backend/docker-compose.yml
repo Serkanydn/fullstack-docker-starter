@@ -69,7 +69,11 @@ services:
           sleep 86400;
         done
       "
-      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 1m
+      timeout: 3s
+      retries: 3
     networks:
       - dreamchat-network
 
